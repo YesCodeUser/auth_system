@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=100, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -49,3 +49,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.is_deleted = True
         self.deleted_at = timezone.now()
         self.save()
+
+
+class Role(models.Model):
+    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100, unique=True)
+
+class Permission(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    code = models.CharField(max_length=100, unique=True)
+
+class RolePermission(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+
+class UserRole(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
