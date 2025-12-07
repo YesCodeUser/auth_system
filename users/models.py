@@ -54,10 +54,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Role(models.Model):
     id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, unique=True)
+    source = models.CharField(max_length=100, blank=True, null=True)
 
 class Permission(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=100, unique=True)
+    source = models.CharField(max_length=100, blank=True, null=True)
 
 class RolePermission(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
