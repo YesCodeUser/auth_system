@@ -56,6 +56,9 @@ class Role(models.Model):
     name = models.CharField(max_length=100, unique=True)
     source = models.CharField(max_length=100, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 class Permission(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(max_length=100, unique=True)
@@ -69,3 +72,6 @@ class RolePermission(models.Model):
 class UserRole(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'User {self.user.email} with role {self.role.name}'

@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Role, UserRole
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_repeat = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = ['email', 'password', 'password_repeat', 'first_name', 'last_name', 'surname']
@@ -18,16 +19,22 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create_user(**validated_data)
+        default_role = Role.objects.get(name='user')
+        UserRole.objects.create(user=user, role=default_role)
+        return user
+
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'surname', 'is_deleted', 'created_at', 'updated_at']
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,5 +47,3 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.surname = validated_data.get('surname', instance.surname)
         instance.save()
         return instance
-
-

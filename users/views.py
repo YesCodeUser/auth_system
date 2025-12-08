@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, UserUpdateSerializer
 from .models import User
+from .permissions import CanViewSelf, CanEditSelf, CanDeleteSelf
 
 
 class RegisterView(APIView):
@@ -65,15 +66,15 @@ class LogoutView(APIView):
 
 
 class MeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanViewSelf]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 
-class UpdateView(APIView):
-    permission_classes = [IsAuthenticated]
+class EditView(APIView):
+    permission_classes = [IsAuthenticated, CanEditSelf]
 
     def patch(self, request):
         serializer = UserUpdateSerializer(instance=request.user ,data=request.data, partial=True)
@@ -84,7 +85,7 @@ class UpdateView(APIView):
 
 
 class DeleteUserView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanDeleteSelf]
 
     def delete(self, request):
         request.user.soft_delete()
